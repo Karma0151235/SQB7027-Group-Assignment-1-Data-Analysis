@@ -188,5 +188,39 @@ dissonance_matrix = pd.crosstab(df[cols_map['self_perception']], df['actual_diet
 print("\n3. Cross-Tabulation (Self-Awareness Discrepancy):")
 print(dissonance_matrix)
 
+# Restore the application split variables for plotting
+app_series = df[cols_map['app_used']].astype(str)
+grab_diet = df[app_series.str.contains('Grab', case=False, na=False)]['dietary_score_continuous']
+panda_diet = df[app_series.str.contains('Panda', case=False, na=False)]['dietary_score_continuous']
+
+# ==============================================================================
+# PHASE 4: ADVANCED VISUALIZATIONS FOR RESULTS INTERPRETATION
+# ==============================================================================
+
+print("\nGenerating advanced interpretative visuals...")
+
+# 1. Ecosystem Comparison (KDE Plot)
+# Visualizes the overlapping, statistically insignificant distributions from the Mann-Whitney test.
+plt.figure(figsize=(10, 6))
+sns.kdeplot(data=grab_diet, label=f'GrabFood (n={len(grab_diet)})', fill=True, alpha=0.4, color='green')
+sns.kdeplot(data=panda_diet, label=f'FoodPanda (n={len(panda_diet)})', fill=True, alpha=0.4, color='magenta')
+plt.title('Dietary Score Distribution: GrabFood vs. FoodPanda', pad=15)
+plt.xlabel('Dietary Score (Total Estimated Grams)')
+plt.ylabel('Density')
+plt.legend()
+plt.tight_layout()
+plt.savefig(os.path.join(plot_dir, '6_App_Ecosystem_Distribution.png'), dpi=300)
+plt.close()
+
+# 2. Covariate Independence (Scatter Matrix)
+# Proves visually that Age, Income, and Diet are entirely decoupled.
+covariate_df = df[['dietary_score_continuous', 'income_num', 'age_num']].dropna()
+covariate_df.columns = ['Dietary Score', 'Income Tier', 'Age Bracket']
+sns.pairplot(covariate_df, kind='reg', plot_kws={'line_kws':{'color':'red'}, 'scatter_kws': {'alpha': 0.5}})
+plt.suptitle('Independence of Covariates: Diet vs Age and Income', y=1.02)
+plt.savefig(os.path.join(plot_dir, '7_Covariate_Independence.png'), dpi=300)
+plt.close()
+
+print("Interpretative visualizations saved successfully.")
 print("\n--- ANALYSIS COMPLETE ---")
 print(f"All visualizations have been rendered and saved in the '{plot_dir}' directory.")
