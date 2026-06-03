@@ -163,6 +163,12 @@ plt.tight_layout()
 plt.savefig(os.path.join(plot_dir, '3_Usage_vs_Dietary_Score.png'))
 plt.close()
 
+# Objective 5: Kendall's Tau-b (Robust Ordinal Association)
+# Rationale: Replaces the Chi-Square test to respect the progressive ranking of Likert data 
+# without forcing nominal categorization or requiring matrix inversion.
+tau, tau_p = stats.kendalltau(df['usage_ordinal'], df['perception_score_continuous'], nan_policy='omit')
+print(f"\nObjective 5 Upgrade (Kendall's Tau-b): Correlation={tau:.3f}, p-value={tau_p:.3f}")
+
 # B. DEPTH OF RESEARCH EXPLORATIONS
 print("\nB. DEPTH OF RESEARCH EXPLORATIONS")
 
